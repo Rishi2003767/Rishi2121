@@ -156,6 +156,17 @@ export function useTimer() {
     }
   };
 
+  // Set duration directly for the current mode (in minutes)
+  const setDuration = (minutes: number) => {
+    const clamped = Math.max(1, Math.min(180, minutes));
+    const key = mode === 'focus' ? 'focus' : mode === 'shortBreak' ? 'shortBreak' : 'longBreak';
+    const updated = { ...settings, [key]: clamped };
+    setSettings(updated);
+    if (!isRunning) {
+      setTimeLeft(clamped * 60);
+    }
+  };
+
   const totalFocusToday = todaySessions.reduce((acc: number, s: FocusSession) => acc + s.duration, 0);
 
   return {
@@ -171,5 +182,6 @@ export function useTimer() {
     reset,
     switchMode,
     updateSettings,
+    setDuration,
   };
 }

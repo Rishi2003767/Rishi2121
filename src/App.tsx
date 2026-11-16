@@ -2,6 +2,7 @@ import { useTimer, TimerMode } from './hooks/useTimer';
 import { TimerDisplay } from './components/TimerDisplay';
 import { Controls } from './components/Controls';
 import { ModeSelector } from './components/ModeSelector';
+import { DurationAdjuster } from './components/DurationAdjuster';
 import { Settings } from './components/Settings';
 import { Stats } from './components/Stats';
 
@@ -31,7 +32,17 @@ function App() {
     reset,
     switchMode,
     updateSettings,
+    setDuration,
   } = useTimer();
+
+  // Current duration in minutes for the active mode
+  const currentDurationMinutes = (() => {
+    switch (mode) {
+      case 'focus': return settings.focus;
+      case 'shortBreak': return settings.shortBreak;
+      case 'longBreak': return settings.longBreak;
+    }
+  })();
 
   const totalDuration = (() => {
     switch (mode) {
@@ -63,11 +74,21 @@ function App() {
       <ModeSelector mode={mode} onModeChange={switchMode} />
 
       {/* Current Mode Label */}
-      <div className="mt-6 mb-4 flex items-center gap-2">
+      <div className="mt-6 mb-2 flex items-center gap-2">
         <span className="text-2xl">{modeEmojis[mode]}</span>
         <span className="text-lg font-medium text-gray-700 dark:text-gray-300">
           {modeLabels[mode]}
         </span>
+      </div>
+
+      {/* Duration Adjuster */}
+      <div className="mb-4">
+        <DurationAdjuster
+          mode={mode}
+          currentDuration={currentDurationMinutes}
+          isRunning={isRunning}
+          onDurationChange={setDuration}
+        />
       </div>
 
       {/* Timer Display */}
